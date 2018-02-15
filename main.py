@@ -63,6 +63,8 @@ def upload():
               full_path_to_file,
               content_settings=ContentSettings(content_type='image/*')
               )
+              cursor.execute("INSERT INTO images (username, title) VALUES (%s, %s);", (username, title))
+          conn.commit()
           cursor.close()
           conn.close()
         return render_template('complete.html')
