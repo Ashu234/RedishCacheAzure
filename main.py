@@ -55,6 +55,7 @@ def upload():
           cursor = conn.cursor()
           for file in request.files.getlist("file"):
             file_to_upload = file.filename
+            full_path_to_file = os.path.join(os.path.dirname(__file__), file_to_upload)
           cursor.close()
           conn.close()
         return render_template('complete.html')
