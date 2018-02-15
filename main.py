@@ -54,15 +54,17 @@ def upload():
         else:
           cursor = conn.cursor()
           for file in request.files.getlist("file"):
-            file_to_upload = file.filename
-            title = request.form['title']
-            full_path_to_file = os.path.join(os.path.dirname(__file__), file_to_upload)
-            block_blob_service.create_blob_from_path(
-            'ashu-blob-container',
-            title,
-            full_path_to_file,
-            content_settings=ContentSettings(content_type='image/png')
-            )
+              file_to_upload = file.filename
+              title = request.form['title']
+              full_path_to_file = os.path.join(os.path.dirname(__file__), file_to_upload)
+              block_blob_service.create_blob_from_path(
+              'ashu-blob-container',
+              title,
+              full_path_to_file,
+              content_settings=ContentSettings(content_type='image/png')
+              )
+              cursor.execute("INSERT INTO images (username, title) VALUES (%s, %s);", (username, title))
+          conn.commit()
           cursor.close()
           conn.close()
         return render_template('complete.html')
