@@ -42,8 +42,8 @@ def upload():
     if request.method == 'POST':
         username = session['username']
         try:
-           conn = mysql.connector.connect(**config)
-           print("Connection established")
+          conn = mysql.connector.connect(**config)
+          print("Connection established")
         except mysql.connector.Error as err:
           if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             print("Something is wrong with the user name or password")
@@ -63,8 +63,6 @@ def upload():
               full_path_to_file,
               content_settings=ContentSettings(content_type='image/png')
               )
-              cursor.execute("INSERT INTO images (username, title) VALUES (%s, %s);", (username, title))
-          conn.commit()
           cursor.close()
           conn.close()
         return render_template('complete.html')
