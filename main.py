@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, logging
+from flask import Flask, render_template, request, redirect, url_for, session
 from azure.storage.blob import BlockBlobService
 from azure.storage.blob import PublicAccess
 from azure.storage.blob import ContentSettings
@@ -75,8 +75,6 @@ def upload():
 def rating(title):
     if request.method == 'POST':
       rating = request.form['rating']
-      app.logger.info('-----------------------------')
-      app.logger.info(rating)
       return render_template('complete.html', rating=rating)
     return render_template('rating.html', title=title)
 
@@ -105,5 +103,5 @@ def viewImages():
     return render_template('viewImages.html', blobs=blobs)
 
 if __name__ == '__main__':
-    app.secret_key = 'secretkey'
     app.run(debug=True)
+app.secret_key = 'secretkey'
