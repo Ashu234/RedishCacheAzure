@@ -74,6 +74,32 @@ def upload():
 def rating(title):
     if request.method == 'POST':
       rating = request.form['rating']
+      try:
+         conn = mysql.connector.connect(**config)
+         print("Connection established")
+      except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+          print("Something is wrong with the user name or password")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+          print("Database does not exist")
+        else:
+          print(err)
+      else:
+        cursor = conn.cursor()
+        result = cursor.execute("SELECT * FROM images WHERE title=%s;",[title])
+        row = cursor.fetchone()
+        ratingSql = 0.0
+        if row[2] == None:
+            ratingSql = 0.0
+        else:
+            ratingSql = row[2]
+        ratingSql = ratingSql + float(rating)
+        print(ratingSql)
+        cursor.execute("UPDATE images SET score=%s WHERE title=%s", (ratingSql, title))
+        print("Updated",cursor.rowcount,"row(s) of data.")
+        conn.commit()
+        cursor.close()
+        conn.close()
       return render_template('complete.html', rating=rating)
     return render_template('rating.html', title=title)
 
