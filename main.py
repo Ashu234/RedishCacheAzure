@@ -53,6 +53,16 @@ def upload():
             print(err)
         else:
           cursor = conn.cursor()
+          for file in request.files.getlist("file"):
+                title = request.form['title']
+                file_to_upload = file.filename
+                full_path_to_file = os.path.join(os.path.dirname(__file__), file_to_upload)
+                block_blob_service.create_blob_from_path(
+                'ashu-blob-container',
+                title,
+                full_path_to_file,
+                content_settings=ContentSettings(content_type='image/png')
+                )
           cursor.close()
           conn.close()
         return render_template('complete.html')
