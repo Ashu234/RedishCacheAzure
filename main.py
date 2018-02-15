@@ -61,7 +61,7 @@ def upload():
               'ashu-blob-container',
               title,
               full_path_to_file,
-              content_settings=ContentSettings(content_type='image/png')
+              content_settings=ContentSettings(content_type='image/*')
               )
           cursor.close()
           conn.close()
