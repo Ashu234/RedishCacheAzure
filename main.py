@@ -30,6 +30,8 @@ def login():
         username = request.form['username']
         session['logged_in'] = True
         session['username'] = username
+        fileread = open('all_month.csv','rb')
+        file_reader = csv.reader(fileread)
         return redirect(url_for('dashboard'))
     return render_template('login.html')  
 
