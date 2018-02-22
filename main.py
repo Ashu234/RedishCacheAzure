@@ -26,6 +26,9 @@ def index():
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
+        username = request.form['username']
+        session['logged_in'] = True
+        session['username'] = username
         return redirect(url_for('dashboard'))
     return render_template('login.html')  
 
