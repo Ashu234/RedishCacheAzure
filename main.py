@@ -31,6 +31,8 @@ def login():
         username = request.form['username']
         session['logged_in'] = True
         session['username'] = username
+        time_start = datetime.datetime.now()
+        session['time'] = time_start
         fileread = open('all_month.csv','rb')
         file_reader = csv.reader(fileread)
         return redirect(url_for('dashboard'))
