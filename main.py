@@ -33,15 +33,11 @@ def login():
         session['username'] = username
         time_start = datetime.datetime.now()
         session['time'] = time_start
-        fileread = open('all_month.csv','rb')
-        file_reader = csv.reader(fileread)
         return redirect(url_for('dashboard'))
     return render_template('login.html')  
 
-@app.route('/dashboard', methods=['POST', 'GET'])
+@app.route('/dashboard')
 def dashboard():
-    if request.method == 'POST':
-        return render_template('dashboard')
     return render_template('dashboard.html')   
 
 if __name__ == '__main__':
