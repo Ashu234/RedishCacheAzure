@@ -21,8 +21,13 @@ config = {
 
 @app.route('/')
 def index():
-  return 'hello world'
+  return redirect(url_for('login'))
 
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'POST':
+        return render_template('login.html')
+    return render_template('login.html')  
 
 
 if __name__ == '__main__':
