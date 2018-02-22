@@ -26,10 +26,15 @@ def index():
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
-        return render_template('login.html')
+        return redirect(url_for('dashboard'))
     return render_template('login.html')  
 
+@app.route('/dashboard', methods=['POST', 'GET'])
+def dashboard():
+    if request.method == 'POST':
+        return render_template('dashboard')
+    return render_template('dashboard.html')   
 
 if __name__ == '__main__':
     app.run(debug=True)
-
+app.secret_key = 'secretkey'
