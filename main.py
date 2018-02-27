@@ -58,13 +58,17 @@ def createDB():
           cursor = conn.cursor()
           cursor.execute("DROP TABLE IF EXISTS earthquake_table;")
           cursor.execute("CREATE TABLE earthquake_table(time INT(11), latitude DECIMAL(10,10), longitude DECIMAL(10,10), depth DECIMAL(5,2), mag DECIMAL(5,2), magType VARCHAR(10), nst INT, gap DECIMAL(5,4), dmin DECIMAL(10,10), rms DECIMAL(7,7), net VARCHAR(10), id VARCHAR(25), updated INT(11), place VARCHAR(50), type VARCHAR(15), horizontalError DECIMAL(5,5), depthError DECIMAL(5,5), magError DECIMAL(5,5), magNst INT, status VARCHAR(15), locationSource VARCHAR(10), magSource VARCHAR(10));")
-          s1 = '2018-02-21T03:27:44.830Z'
-          s2 = '2018-02-21T03:29:19.983Z'
-          dt_obj1 = datetime.strptime(s1, '%Y-%m-%dT%H:%M:%S.%fZ')
-          dt_obj2 = datetime.strptime(s2, '%Y-%m-%dT%H:%M:%S.%fZ')
-          millisec1 = dt_obj1.timestamp() * 1000
-          millisec2 = dt_obj2.timestamp() * 1000
-          cursor.executemany("""INSERT INTO earthquake_table (time, latitude, longitude, depth, mag, magType, nst, gap, dmin, rms, net, id, updated, place, type, horizontalError, depthError, magError, magNst, status, locationSource, magSource) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);""", [(millisec1, 38.8151665, -122.8178329, 2.12, 0.9, "md", 19, 70, 0.01021, 0.04, "nc", "nc72973021", millisec2, "7km NW of The Geysers, CA", "earthquake", 0.27, 0.45, 0.09, 5, "automatic", "nc", "nc")])
+          line = 0;
+          for attr in file_reader:
+              if line == 0:
+                  line = 1
+              else:
+                  s1 = str(attr[0])
+                  s2 = str(attr[12])
+                  dt_obj1 = datetime.strptime(s1, '%Y-%m-%dT%H:%M:%S.%fZ')
+                  dt_obj2 = datetime.strptime(s2, '%Y-%m-%dT%H:%M:%S.%fZ')
+                  millisec1 = dt_obj1.timestamp() * 1000
+                  millisec2 = dt_obj2.timestamp() * 1000
           conn.commit()
           cursor.close()
           conn.close()
