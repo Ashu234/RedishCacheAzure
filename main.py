@@ -42,7 +42,7 @@ def dashboard():
   
 @app.route('/createDB')
 def createDB():
-  fileread = open('all_month.csv','rb')
+  fileread = open('all_month.csv','rt')
   file_reader = csv.reader(fileread)
   try:
            conn = mysql.connector.connect(**config)
