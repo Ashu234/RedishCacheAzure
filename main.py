@@ -9,7 +9,7 @@ import csv
 from datetime import datetime
 
 app = Flask(__name__)
-
+#clone successfull
 config = {
   'host':'myserver-mysql-ashu.mysql.database.azure.com',
   'user':'root123@myserver-mysql-ashu',
@@ -34,12 +34,12 @@ def login():
         time_start = datetime.now()
         session['time'] = time_start
         return redirect(url_for('dashboard'))
-    return render_template('login.html')  
+    return render_template('login.html')
 
 @app.route('/dashboard')
 def dashboard():
     return render_template('dashboard.html')
-  
+
 @app.route('/createDB')
 def createDB():
   fileread = open('all_month.csv','rt')
@@ -75,7 +75,7 @@ def createDB():
           conn.close()
   return render_template('complete.html')
 
-  
+
 if __name__ == '__main__':
     app.run(debug=True)
 app.secret_key = 'secretkey'
