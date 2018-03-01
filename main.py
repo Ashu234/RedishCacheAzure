@@ -36,6 +36,10 @@ def login():
         return redirect(url_for('dashboard'))
     return render_template('login.html')
 
+@app.route('/randomQueries')
+def randomQueries():
+  return render_template('randomQueries.html')
+
 @app.route('/dashboard')
 def dashboard():
     return render_template('dashboard.html')
