@@ -60,7 +60,7 @@ def random1000queries():
     else:
             cursor = conn.cursor()
             time_start = datetime.now()
-            for i in range(0,500):
+            for i in range(0,1):
                 randomnum = random.uniform(0,1)
                 result = cursor.execute("SELECT mag FROM earthquake_table WHERE mag >= %s AND mag <= %s ;", (randomnum,randomnum+1.0))
                 articles = cursor.fetchall()
