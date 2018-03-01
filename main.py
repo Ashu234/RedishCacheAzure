@@ -6,6 +6,7 @@ import mysql.connector
 from mysql.connector import errorcode
 import os
 import csv
+import random
 from datetime import datetime
 
 app = Flask(__name__)
@@ -43,6 +44,16 @@ def randomQueries():
 @app.route('/dashboard')
 def dashboard():
     return render_template('dashboard.html')
+
+@app.route('/random1000queries')
+def random1000queries():
+    time_start = datetime.now()
+    for i in range(0,1000):
+       randomnum = random.uniform(0,1)
+       randomnum = randomnum*8
+    time_end = datetime.now()
+    time_diff = time_end - time_start
+    return render_template('complete.html', time_diff=time_diff)
 
 @app.route('/createDB')
 def createDB():
