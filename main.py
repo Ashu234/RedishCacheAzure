@@ -70,6 +70,40 @@ def random1000queries():
     time_diff = time_end - time_start
     return render_template('complete.html', time_diff=time_diff)
 
+@app.route('/restrictedQueries')
+def restrictedQueries():
+    return render_template('restrictedQueries.html')
+
+@app.route('/searchWithinDistance', methods=['GET','POST'])
+def searchWithinDistance():
+    if request.method == 'POST':
+        latitude = request.form['latitude']
+        longitude = request.form['longitude']
+        distance = request.form['distance']
+        #print("latitude %s " % (latitude))
+        time_start = datetime.now()
+        try:
+                 conn = mysql.connector.connect(**config)
+                 print("Connection established")
+        except mysql.connector.Error as err:
+                if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                  print("Something is wrong with the user name or password")
+                elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                  print("Database does not exist")
+                else:
+                  print(err)
+        else:
+                cursor = conn.cursor()
+                cursor.execute("SELECT latitude, longitude, place, SQRT(POW(69.1 * (latitude - %s), 2) + POW(69.1 * (%s - longitude) * COS(latitude / 57.3), 2)) AS distance FROM earthquake_table HAVING distance < %s ORDER BY distance ;", (latitude, longitude, distance))
+                result = cursor.fetchall()
+                #print(result)
+                cursor.close()
+                conn.close()
+        time_end = datetime.now()
+        time_diff = time_end - time_start
+        return render_template('complete.html',time_diff=time_diff)
+    return render_template('searchWithinDistance.html')
+
 @app.route('/createDB')
 def createDB():
   fileread = open('all_month.csv','rt')
@@ -89,7 +123,7 @@ def createDB():
           cursor = conn.cursor()
           time_start = datetime.now()
           cursor.execute("DROP TABLE IF EXISTS earthquake_table;")
-          cursor.execute("CREATE TABLE earthquake_table(time INT(11), latitude DECIMAL(10,10), longitude DECIMAL(10,10), depth DECIMAL(5,2), mag DECIMAL(5,2), magType VARCHAR(10), nst INT, gap DECIMAL(5,4), dmin DECIMAL(10,10), rms DECIMAL(7,7), net VARCHAR(10), id VARCHAR(25), updated INT(11), place VARCHAR(50), type VARCHAR(15), horizontalError DECIMAL(5,5), depthError DECIMAL(5,5), magError DECIMAL(5,5), magNst INT, status VARCHAR(15), locationSource VARCHAR(10), magSource VARCHAR(10));")
+          cursor.execute("CREATE TABLE earthquake_table(time INT(11), latitude DECIMAL(10,8), longitude DECIMAL(11,8), depth DECIMAL(5,2), mag DECIMAL(5,2), magType VARCHAR(10), nst INT, gap DECIMAL(5,4), dmin DECIMAL(10,10), rms DECIMAL(7,7), net VARCHAR(10), id VARCHAR(25), updated INT(11), place VARCHAR(50), type VARCHAR(15), horizontalError DECIMAL(5,5), depthError DECIMAL(5,5), magError DECIMAL(5,5), magNst INT, status VARCHAR(15), locationSource VARCHAR(10), magSource VARCHAR(10));")
           line = 0;
           for attr in file_reader:
               if line == 0:
