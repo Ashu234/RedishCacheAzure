@@ -82,8 +82,7 @@ def createDB():
           conn.close()
           time_end = datetime.now()
           time_diff = time_end - time_start
-          session['time_diff'] = time_diff
-  return render_template('complete.html')
+  return render_template('complete.html', time_diff=time_diff)
 
 
 if __name__ == '__main__':
