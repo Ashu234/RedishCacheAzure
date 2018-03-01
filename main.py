@@ -47,12 +47,27 @@ def dashboard():
 
 @app.route('/random1000queries')
 def random1000queries():
-    time_start = datetime.now()
-    for i in range(0,1000):
-       randomnum = random.uniform(0,1)
-       randomnum = randomnum*8
-    time_end = datetime.now()
-    time_diff = time_end - time_start
+    try:
+             conn = mysql.connector.connect(**config)
+             print("Connection established")
+    except mysql.connector.Error as err:
+            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+              print("Something is wrong with the user name or password")
+            elif err.errno == errorcode.ER_BAD_DB_ERROR:
+              print("Database does not exist")
+            else:
+              print(err)
+    else:
+            cursor = conn.cursor()
+            time_start = datetime.now()
+            for i in range(0,1000):
+                randomnum = random.uniform(0,1)
+                randomnum = randomnum*8
+            conn.commit()
+            cursor.close()
+            conn.close()
+            time_end = datetime.now()
+            time_diff = time_end - time_start
     return render_template('complete.html', time_diff=time_diff)
 
 @app.route('/createDB')
