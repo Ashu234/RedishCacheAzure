@@ -113,11 +113,11 @@ def searchWithinDistance():
         return render_template('complete.html',time_diff=time_diff)
     return render_template('searchWithinDistance.html')
 
-@app.route('/searchInCalifornia', methods=['GET','POST'])
+@app.route('/searchByCityQuery', methods=['GET','POST'])
 def searchInCalifornia():
     if request.method == 'POST':
-        state = request.form['state']
-        print("state %s " % (state))
+        city = request.form['city']
+        print("city %s " % (city))
         time_start = datetime.now()
         try:
                  conn = mysql.connector.connect(**config)
@@ -132,8 +132,8 @@ def searchInCalifornia():
         else:
                 cursor = conn.cursor()
                 # "{0} LIKE '%{1}'".format(field, value_suffix)
-                query = "SELECT place FROM earthquake_table WHERE place LIKE '%{0}'".format(state)
-                cursor.execute(query)
+                #query = "SELECT givenName, city, state FROM people_table WHERE city=%s ;"
+                cursor.execute("SELECT givenName, city, state FROM people_table WHERE city = %s ;", [city])
                 result = cursor.fetchall()
                 #print(result)
                 cursor.close()
@@ -141,7 +141,7 @@ def searchInCalifornia():
         time_end = datetime.now()
         time_diff = time_end - time_start
         return render_template('complete.html',time_diff=time_diff)
-    return render_template('searchInCalifornia.html')
+    return render_template('searchByCityQuery.html')
 
 @app.route('/createDB')
 def createDB():
