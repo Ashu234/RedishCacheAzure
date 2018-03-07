@@ -104,6 +104,36 @@ def searchWithinDistance():
         return render_template('complete.html',time_diff=time_diff)
     return render_template('searchWithinDistance.html')
 
+@app.route('/searchInCalifornia', methods=['GET','POST'])
+def searchInCalifornia():
+    if request.method == 'POST':
+        state = request.form['state']
+        print("state %s " % (state))
+        time_start = datetime.now()
+        try:
+                 conn = mysql.connector.connect(**config)
+                 print("Connection established")
+        except mysql.connector.Error as err:
+                if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                  print("Something is wrong with the user name or password")
+                elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                  print("Database does not exist")
+                else:
+                  print(err)
+        else:
+                cursor = conn.cursor()
+                # "{0} LIKE '%{1}'".format(field, value_suffix)
+                query = "SELECT place FROM earthquake_table WHERE place LIKE '%{0}'".format(state)
+                cursor.execute(query)
+                result = cursor.fetchall()
+                #print(result)
+                cursor.close()
+                conn.close()
+        time_end = datetime.now()
+        time_diff = time_end - time_start
+        return render_template('complete.html',time_diff=time_diff)
+    return render_template('searchInCalifornia.html')
+
 @app.route('/createDB')
 def createDB():
   fileread = open('all_month.csv','rt')
