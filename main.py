@@ -21,6 +21,8 @@ config = {
   'ssl_ca':'BaltimoreCyberTrustRoot.crt.pem'
 }
 
+r_server = redis.StrictRedis(host='ashuredis.redis.cache.windows.net', port=6380, db=0, password='RgqQTepeV40zxbF8pTcMLuP5KwStyBCJ++Fb7c1J1UM=', ssl=True)
+
 #block_blob_service = BlockBlobService(account_name='ashuazurestorage', account_key='HGvsHgPPFOp64gztvR6B9g+RNUUqzwhl+aNid8wpwca1uwejBMEhyVkP3oev1SKEnI5eeq4EIXWfcvzWjxAjuQ==')
 #block_blob_service.set_container_acl('ashu-blob-container', public_access=PublicAccess.Container)
 
