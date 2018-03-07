@@ -38,6 +38,7 @@ def login():
         session['username'] = username
         time_start = datetime.now()
         session['time'] = time_start
+        r_server.set('foo', 'bar')
         return redirect(url_for('dashboard'))
     return render_template('login.html')
 
