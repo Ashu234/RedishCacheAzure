@@ -83,12 +83,13 @@ def random1000queries():
 def restrictedQueries():
     return render_template('restrictedQueries.html')
 
-@app.route('/searchWithinDistance', methods=['GET','POST'])
-def searchWithinDistance():
+@app.route('/searchByRangeQuery', methods=['GET','POST'])
+def searchByRangeQuery():
     if request.method == 'POST':
-        latitude = request.form['latitude']
-        longitude = request.form['longitude']
-        distance = request.form['distance']
+        latitudeStart = request.form['latitudeStart']
+        latitudeEnd = request.form['latitudeEnd']
+        age_lower = request.form['age_lower']
+        age_upper = request.form['age_upper']
         #print("latitude %s " % (latitude))
         time_start = datetime.now()
         try:
@@ -103,18 +104,23 @@ def searchWithinDistance():
                   print(err)
         else:
                 cursor = conn.cursor()
-                cursor.execute("SELECT latitude, longitude, place, SQRT(POW(69.1 * (latitude - %s), 2) + POW(69.1 * (%s - longitude) * COS(latitude / 57.3), 2)) AS distance FROM earthquake_table HAVING distance < %s ORDER BY distance ;", (latitude, longitude, distance))
-                result = cursor.fetchall()
-                #print(result)
+                cursor.execute("SELECT givenName, surName, city, state, Age, latitude, longitude FROM people_table WHERE (latitude >= %s AND  latitude <= %s) AND (Age >= %s AND Age <= %s) ;", (latitudeStart, latitudeEnd, age_lower, age_upper))
+                results = cursor.fetchall()
                 cursor.close()
                 conn.close()
-        time_end = datetime.now()
-        time_diff = time_end - time_start
-        return render_template('complete.html',time_diff=time_diff)
-    return render_template('searchWithinDistance.html')
+                count = 0;
+                for result in results:
+                    count = count + 1
+                time_end = datetime.now()
+                time_diff = time_end - time_start
+                timediff = str(time_diff)
+                session['time_diff'] = timediff
+                session['result_count'] = str(count)
+                return render_template('RangeSearchResult.html', results=results)
+    return render_template('SearchByRange.html')
 
 @app.route('/searchByCityQuery', methods=['GET','POST'])
-def searchInCalifornia():
+def searchByCityQuery():
     if request.method == 'POST':
         city = request.form['city']
         print("city %s " % (city))
