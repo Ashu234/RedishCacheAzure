@@ -38,7 +38,11 @@ def login():
         session['username'] = username
         time_start = datetime.now()
         session['time'] = time_start
-        r_server.set('foo', 'bar')
+        bar = ['hello', 'dear', 'how', 'are', 'you']
+        r_server.set('foo', bar)
+        res = r_server.get('foo')
+        print("result from redis = ")
+        print(res)
         return redirect(url_for('dashboard'))
     return render_template('login.html')
 
@@ -141,9 +145,9 @@ def searchInCalifornia():
 
 @app.route('/createDB')
 def createDB():
-  fileread = open('all_month.csv','rt')
+  fileread = open('data.csv','rt')
   file_reader = csv.reader(fileread)
-  dataMonth = []
+  dataPeople = []
   try:
            conn = mysql.connector.connect(**config)
            print("Connection established")
@@ -157,25 +161,19 @@ def createDB():
   else:
           cursor = conn.cursor()
           time_start = datetime.now()
-          cursor.execute("DROP TABLE IF EXISTS earthquake_table;")
-          cursor.execute("CREATE TABLE earthquake_table(time INT(11), latitude DECIMAL(10,8), longitude DECIMAL(11,8), depth DECIMAL(5,2), mag DECIMAL(5,2), magType VARCHAR(10), nst INT, gap DECIMAL(5,4), dmin DECIMAL(10,10), rms DECIMAL(7,7), net VARCHAR(10), id VARCHAR(25), updated INT(11), place VARCHAR(50), type VARCHAR(15), horizontalError DECIMAL(5,5), depthError DECIMAL(5,5), magError DECIMAL(5,5), magNst INT, status VARCHAR(15), locationSource VARCHAR(10), magSource VARCHAR(10));")
+          cursor.execute("DROP TABLE IF EXISTS people_table;")
+          cursor.execute("CREATE TABLE people_table (ID INT NOT NULL AUTO_INCREMENT, gender VARCHAR(10), givenName VARCHAR(25), surName VARCHAR(25),  streetAddress VARCHAR(50), city VARCHAR(25), state VARCHAR(10), emailAddress VARCHAR(100), username VARCHAR(50), telephoneNumber VARCHAR(15), Age INT, bloodType VARCHAR(10), centimeters INT, latitude DOUBLE(10,8), longitude DOUBLE(10,8), PRIMARY KEY (ID) );")
           line = 0;
           for attr in file_reader:
               if line == 0:
                   line = 1
               else:
-                  s1 = str(attr[0])
-                  s2 = str(attr[12])
-                  dt_obj1 = datetime.strptime(s1, '%Y-%m-%dT%H:%M:%S.%fZ')
-                  dt_obj2 = datetime.strptime(s2, '%Y-%m-%dT%H:%M:%S.%fZ')
-                  millisec1 = dt_obj1.timestamp() * 1000
-                  millisec2 = dt_obj2.timestamp() * 1000
                   data = []
-                  data.extend((millisec1, attr[1], attr[2],attr[3], attr[4], attr[5], attr[6], attr[7], attr[8], attr[9], attr[10], attr[11], millisec2, attr[13], attr[14], attr[15], attr[16], attr[17], attr[18], attr[19], attr[20], attr[21]))
-                  dataMonth.append(data)
+                  data.extend((attr[0], attr[1], attr[2],attr[3], attr[4], attr[5], attr[6], attr[7], attr[8], attr[9], attr[10], attr[11], attr[12], attr[13]))
+                  dataPeople.append(data)
           #cursor.executemany("""INSERT INTO earthquake_table (time, latitude, longitude, depth, mag, magType, nst, gap, dmin, rms, net, id, updated, place, type, horizontalError, depthError, magError, magNst, status, locationSource, magSource) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);""", [(millisec1, attr[1], attr[2],attr[3], attr[4], attr[5], attr[6], attr[7], attr[8], attr[9], attr[10], attr[11], millisec2, attr[13], attr[14], attr[15], attr[16], attr[17], attr[18], attr[19], attr[20], attr[21])])
-          stmt = """INSERT INTO earthquake_table (time, latitude, longitude, depth, mag, magType, nst, gap, dmin, rms, net, id, updated, place, type, horizontalError, depthError, magError, magNst, status, locationSource, magSource) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
-          cursor.executemany(stmt, dataMonth)
+          stmt = """INSERT INTO people_table (gender, givenName, surName, streetAddress, city, state, emailAddress, username, telephoneNumber, Age, bloodType, centimeters, latitude, longitude) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+          cursor.executemany(stmt, dataPeople)
           conn.commit()
           cursor.close()
           conn.close()
