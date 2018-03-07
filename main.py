@@ -8,6 +8,8 @@ import os
 import csv
 import random
 from datetime import datetime
+from redis import Redis
+import redis
 
 app = Flask(__name__)
 #clone successfull
