@@ -133,14 +133,17 @@ def searchInCalifornia():
                 cursor = conn.cursor()
                 # "{0} LIKE '%{1}'".format(field, value_suffix)
                 #query = "SELECT givenName, city, state FROM people_table WHERE city=%s ;"
-                cursor.execute("SELECT givenName, city, state FROM people_table WHERE city = %s ;", [city])
-                result = cursor.fetchall()
+                cursor.execute("SELECT givenName, surName, city, state FROM people_table WHERE city = %s ;", [city])
+                results = cursor.fetchall()
                 #print(result)
                 cursor.close()
                 conn.close()
         time_end = datetime.now()
         time_diff = time_end - time_start
-        return render_template('complete.html',time_diff=time_diff)
+        timediff = str(time_diff)
+        #print("time_diff in string %s" % (timediff))
+        session['time_diff'] = timediff
+        return render_template('CitySearchResult.html', results=results)
     return render_template('searchByCityQuery.html')
 
 @app.route('/createDB')
