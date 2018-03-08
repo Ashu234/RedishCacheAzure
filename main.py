@@ -28,6 +28,48 @@ r_server = redis.StrictRedis(host='ashuredis.redis.cache.windows.net', port=6380
 #block_blob_service = BlockBlobService(account_name='ashuazurestorage', account_key='HGvsHgPPFOp64gztvR6B9g+RNUUqzwhl+aNid8wpwca1uwejBMEhyVkP3oev1SKEnI5eeq4EIXWfcvzWjxAjuQ==')
 #block_blob_service.set_container_acl('ashu-blob-container', public_access=PublicAccess.Container)
 
+@app.route('/searchByCityQuery', methods=['GET','POST'])
+def searchByCityQuery():
+    if request.method == 'POST':
+        city = request.form['city']
+        print("city %s " % (city))
+        time_start = datetime.now()
+        key = city;
+        if (r_server.get(key)):
+            #results = pickle.loads(r_server.get(key))#r_server.get(key)
+            # print("key found")
+            # for result in results:
+            #     print(result)
+            #time_end = datetime.now()
+            #time_diff = time_end - time_start
+            #timediff = str(time_diff)
+            #return render_template('CitySearchResult.html', results=results)
+        else:
+            try:
+                     conn = mysql.connector.connect(**config)
+                     print("Connection established")
+            except mysql.connector.Error as err:
+                    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                      print("Something is wrong with the user name or password")
+                    elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                      print("Database does not exist")
+                    else:
+                      print(err)
+            else:
+                    cursor = conn.cursor()
+                    cursor.execute("SELECT givenName, surName, city, state FROM people_table WHERE city = %s ;", [city])
+                    results = cursor.fetchall()
+                    cursor.close()
+                    conn.close()
+            time_end = datetime.now()
+            time_diff = time_end - time_start
+            timediff = str(time_diff)
+            #print("time_diff in string %s" % (timediff))
+            session['time_diff'] = timediff
+            r_server.set(key,pickle.dumps(results))
+            return render_template('CitySearchResult.html', results=results)
+    return render_template('searchByCityQuery.html')
+
 @app.route('/')
 def index():
   return redirect(url_for('login'))
@@ -121,47 +163,7 @@ def searchByRangeQuery():
                 return render_template('RangeSearchResult.html', results=results)
     return render_template('SearchByRange.html')
 
-@app.route('/searchByCityQuery', methods=['GET','POST'])
-def searchByCityQuery():
-    if request.method == 'POST':
-        city = request.form['city']
-        print("city %s " % (city))
-        time_start = datetime.now()
-        key = city;
-        if (r_server.get(key)):
-            results = pickle.loads(r_server.get(key))#r_server.get(key)
-            print("key found")
-            for result in results:
-                print(result)
-            #time_end = datetime.now()
-            #time_diff = time_end - time_start
-            #timediff = str(time_diff)
-            #return render_template('CitySearchResult.html', results=results)
-        else:
-            try:
-                     conn = mysql.connector.connect(**config)
-                     print("Connection established")
-            except mysql.connector.Error as err:
-                    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-                      print("Something is wrong with the user name or password")
-                    elif err.errno == errorcode.ER_BAD_DB_ERROR:
-                      print("Database does not exist")
-                    else:
-                      print(err)
-            else:
-                    cursor = conn.cursor()
-                    cursor.execute("SELECT givenName, surName, city, state FROM people_table WHERE city = %s ;", [city])
-                    results = cursor.fetchall()
-                    cursor.close()
-                    conn.close()
-            time_end = datetime.now()
-            time_diff = time_end - time_start
-            timediff = str(time_diff)
-            #print("time_diff in string %s" % (timediff))
-            session['time_diff'] = timediff
-            r_server.set(key,pickle.dumps(results))
-            return render_template('CitySearchResult.html', results=results)
-    return render_template('searchByCityQuery.html')
+
 
 @app.route('/createDB')
 def createDB():
