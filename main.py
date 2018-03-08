@@ -10,7 +10,8 @@ import random
 from datetime import datetime
 from redis import Redis
 import redis
-import _pickle as cPickle
+import six
+from six.moves import cPickle as pickle
 
 app = Flask(__name__)
 #clone successfull
@@ -128,9 +129,10 @@ def searchByCityQuery():
         time_start = datetime.now()
         key = city;
         if (r_server.get(key)):
-            #results = cPickle.loads(r_server.get(key))#r_server.get(key)
+            results = pickle.loads(r_server.get(key))#r_server.get(key)
             print("key found")
-            #print(results[0])
+            for result in results:
+                print(result)
             #time_end = datetime.now()
             #time_diff = time_end - time_start
             #timediff = str(time_diff)
@@ -157,7 +159,7 @@ def searchByCityQuery():
             timediff = str(time_diff)
             #print("time_diff in string %s" % (timediff))
             session['time_diff'] = timediff
-            #r_server.set(key,cPickle.dumps(results))
+            r_server.set(key,pickle.dumps(results))
             return render_template('CitySearchResult.html', results=results)
     return render_template('searchByCityQuery.html')
 

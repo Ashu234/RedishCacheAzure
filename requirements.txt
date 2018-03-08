@@ -12,4 +12,3 @@ six==1.10.0
 Werkzeug==0.11.5
 mysql-connector==2.1.4
 redis==2.10.6
-pickle==2.0.0
