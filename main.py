@@ -35,29 +35,40 @@ def searchByCityQuery():
         print("city %s " % (city))
         time_start = datetime.now()
         key = city;
-        try:
-                 conn = mysql.connector.connect(**config)
-                 print("Connection established")
-        except mysql.connector.Error as err:
-                if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-                  print("Something is wrong with the user name or password")
-                elif err.errno == errorcode.ER_BAD_DB_ERROR:
-                  print("Database does not exist")
-                else:
-                  print(err)
+        if (r_server.get(key)):
+            print("inside")
+            results = pickle.loads(r_server.get(key))
+            print(results)
+            time_end = datetime.now()
+            time_diff = time_end - time_start
+            timediff = str(time_diff)
+            session['time_diff'] = timediff
+            return render_template('CitySearchResult.html', results=results)
         else:
-                cursor = conn.cursor()
-                cursor.execute("SELECT givenName, surName, city, state FROM people_table WHERE city = %s ;", [city])
-                results = cursor.fetchall()
-                cursor.close()
-                conn.close()
-        time_end = datetime.now()
-        time_diff = time_end - time_start
-        timediff = str(time_diff)
-        #print("time_diff in string %s" % (timediff))
-        session['time_diff'] = timediff
-        #r_server.set(key,pickle.dumps(results))
-        return render_template('CitySearchResult.html', results=results)
+            try:
+                     conn = mysql.connector.connect(**config)
+                     print("Connection established")
+            except mysql.connector.Error as err:
+                    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                      print("Something is wrong with the user name or password")
+                    elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                      print("Database does not exist")
+                    else:
+                      print(err)
+            else:
+                    cursor = conn.cursor()
+                    cursor.execute("SELECT givenName, surName, city, state FROM people_table WHERE city = %s ;", [city])
+                    results = cursor.fetchall()
+                    cursor.close()
+                    conn.close()
+            time_end = datetime.now()
+            time_diff = time_end - time_start
+            timediff = str(time_diff)
+            print("inside else")
+            session['time_diff'] = timediff
+            r_server.set(key,pickle.dumps(results))
+            r_server.expire(key, 36)
+            return render_template('CitySearchResult.html', results=results)
     return render_template('searchByCityQuery.html')
 
 @app.route('/')
@@ -72,11 +83,9 @@ def login():
         session['username'] = username
         time_start = datetime.now()
         session['time'] = time_start
-        bar = ['hello', 'dear', 'how', 'are', 'you']
-        r_server.set('foo', pickle.dumps(bar))
-        res = pickle.loads(r_server.get('foo'))
-        print("result from redis = ")
-        print(res)
+        # bar = ['hello', 'dear', 'how', 'are', 'you']
+        # r_server.set('foo', pickle.dumps(bar))
+        # res = pickle.loads(r_server.get('foo'))
         return redirect(url_for('dashboard'))
     return render_template('login.html')
 
