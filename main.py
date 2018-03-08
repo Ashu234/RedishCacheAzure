@@ -73,8 +73,8 @@ def login():
         time_start = datetime.now()
         session['time'] = time_start
         bar = ['hello', 'dear', 'how', 'are', 'you']
-        r_server.set('foo', bar)
-        res = r_server.get('foo')
+        r_server.set('foo', pickle.dumps(bar))
+        res = pickle.loads(r_server.get('foo'))
         print("result from redis = ")
         print(res)
         return redirect(url_for('dashboard'))
