@@ -10,7 +10,7 @@ import random
 from datetime import datetime
 from redis import Redis
 import redis
-#import _pickle as cPickle
+import _pickle as cPickle
 
 app = Flask(__name__)
 #clone successfull
